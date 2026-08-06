@@ -1,0 +1,5 @@
+use https://webcrack.netlify.app/
+check coverage
+use react devtools
+
+use WABT tool to convert the wasm file to .wat

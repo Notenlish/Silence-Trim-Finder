@@ -1,0 +1,3 @@
+cFopMOmaf6oo.js -> 90% chance it contains nothing of value.
+Dr8MHZPCjXL2.js -> not useful
+viifao.wasm -> 64 bit math using 32bit integers. idk why. 
