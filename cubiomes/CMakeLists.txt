@@ -1,0 +1,285 @@
+cmake_minimum_required(VERSION 3.15)
+project(cubiomes)
+
+if (MSVC)
+	message(FATAL_ERROR "MSVC is not supported for this project. Please use MinGW, UCRT64, Clang, or GCC.")
+endif()
+
+if (NOT CMAKE_BUILD_TYPE)
+	set(CMAKE_BUILD_TYPE Release)
+endif()
+if (WIN32)
+	set(CMAKE_C_FLAGS "-D_WIN32")
+endif()
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra")
+set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -DNDEBUG")
+set(CMAKE_C_FLAGS_DEBUG "-O0 -g3 -DDEBUG")
+
+set(HEADERS
+	finders.h
+	carver.h
+	generator.h
+	layers.h
+	biomenoise.h
+	biomes.h
+	noise.h
+	terrainnoise.h
+	rng.h
+	util.h
+	quadbase.h
+	xrms.h
+	features/end_city.h
+	features/fortress.h
+	features/ore.h
+	features/stronghold.h
+	features/mineshaft.h
+	jigsaw/jigsaw.h
+	jigsaw/jigsaw_data.h
+	jigsaw/jigsaw_1_16_1.h
+	jigsaw/jigsaw_1_16_5.h
+	jigsaw/jigsaw_1_18_2.h
+	jigsaw/jigsaw_1_19_2.h
+	jigsaw/jigsaw_1_19_4.h
+	jigsaw/jigsaw_1_20_1.h
+	jigsaw/jigsaw_1_20_6.h
+	jigsaw/jigsaw_1_21_11.h
+	jigsaw/jigsaw_1_21_4.h
+	jigsaw/jigsaw_1_21_8.h
+	loot/items.h
+	loot/logging.h
+	loot/loot_functions.h
+	loot/loot_tables.h
+	loot/loot_table_context.h
+	loot/loot_table_parser.h
+	loot/mc_loot.h
+	loot/loot_tables/ancient_city_1_20.h
+	loot/loot_tables/ancient_city_1_21_1.h
+	loot/loot_tables/ancient_city_1_21_6.h
+	loot/loot_tables/ancient_city_1_21_11.h
+	loot/loot_tables/ancient_city_26_1.h
+	loot/loot_tables/ancient_city_26_2.h
+	loot/loot_tables/ancient_city_ice_box_1_21_11.h
+	loot/loot_tables/ancient_city_ice_box_26_2.h
+	loot/loot_tables/bastion_bridge_1_16_1.h
+	loot/loot_tables/bastion_bridge_1_16_5.h
+	loot/loot_tables/bastion_bridge_1_20.h
+	loot/loot_tables/bastion_hoglin_stable_1_16_1.h
+	loot/loot_tables/bastion_hoglin_stable_1_16_5.h
+	loot/loot_tables/bastion_other_1_16_1.h
+	loot/loot_tables/bastion_other_1_16_5.h
+	loot/loot_tables/bastion_other_1_20.h
+	loot/loot_tables/bastion_other_1_21_1.h
+	loot/loot_tables/bastion_other_1_21_9.h
+	loot/loot_tables/bastion_treasure_1_16_1.h
+	loot/loot_tables/bastion_treasure_1_16_5.h
+	loot/loot_tables/buried_treasure_1_13.h
+	loot/loot_tables/buried_treasure_1_18.h
+	loot/loot_tables/buried_treasure_1_21_11.h
+	loot/loot_tables/desert_pyramid_1_13.h
+	loot/loot_tables/desert_pyramid_1_20.h
+	loot/loot_tables/desert_pyramid_1_21_6.h
+	loot/loot_tables/desert_pyramid_1_21_9.h
+	loot/loot_tables/desert_pyramid_1_21_11.h
+	loot/loot_tables/end_city_treasure_1_13.h
+	loot/loot_tables/end_city_treasure_1_20.h
+	loot/loot_tables/end_city_treasure_1_21_9.h
+	loot/loot_tables/end_city_treasure_1_21_11.h
+	loot/loot_tables/igloo_chest_1_13.h
+	loot/loot_tables/jungle_temple_1_13.h
+	loot/loot_tables/jungle_temple_1_14.h
+	loot/loot_tables/jungle_temple_1_20.h
+	loot/loot_tables/jungle_temple_1_21_6.h
+	loot/loot_tables/jungle_temple_1_21_9.h
+	loot/loot_tables/jungle_temple_1_21_11.h
+	loot/loot_tables/jungle_temple_dispenser_1_13.h
+	loot/loot_tables/nether_bridge_1_13.h
+	loot/loot_tables/nether_bridge_1_20.h
+	loot/loot_tables/nether_bridge_1_21_9.h
+	loot/loot_tables/pillager_outpost_1_14.h
+	loot/loot_tables/pillager_outpost_1_19_2.h
+	loot/loot_tables/pillager_outpost_1_20.h
+	loot/loot_tables/pillager_outpost_1_21_11.h
+	loot/loot_tables/ruined_portal_1_16_1.h
+	loot/loot_tables/ruined_portal_1_21_5.h
+	loot/loot_tables/shipwreck_map_1_13.h
+	loot/loot_tables/shipwreck_map_1_18.h
+	loot/loot_tables/shipwreck_map_1_20.h
+	loot/loot_tables/shipwreck_map_1_21_11.h
+	loot/loot_tables/shipwreck_supply_1_13.h
+	loot/loot_tables/shipwreck_supply_1_14.h
+	loot/loot_tables/shipwreck_supply_1_17.h
+	loot/loot_tables/shipwreck_supply_1_20.h
+	loot/loot_tables/shipwreck_supply_1_21_11.h
+	loot/loot_tables/shipwreck_treasure_1_13.h
+	loot/loot_tables/shipwreck_treasure_1_20.h
+	loot/loot_tables/shipwreck_treasure_1_21_11.h
+	loot/loot_tables/simple_dungeon_1_14.h
+	loot/loot_tables/stronghold_corridor_1_13.h
+	loot/loot_tables/stronghold_corridor_1_18.h
+	loot/loot_tables/stronghold_corridor_1_20.h
+	loot/loot_tables/stronghold_corridor_1_21_6.h
+	loot/loot_tables/stronghold_corridor_1_21_9.h
+	loot/loot_tables/stronghold_crossing_1_13.h
+	loot/loot_tables/stronghold_library_1_13.h
+	loot/loot_tables/stronghold_library_1_20.h
+	loot/loot_tables/village_armorer_1_16_1.h
+	loot/loot_tables/village_butcher_1_16_1.h
+	loot/loot_tables/village_cartographer_1_16_1.h
+	loot/loot_tables/village_desert_house_1_16_1.h
+	loot/loot_tables/village_fisher_1_16_1.h
+	loot/loot_tables/village_fletcher_1_16_1.h
+	loot/loot_tables/village_mason_1_16_1.h
+	loot/loot_tables/village_plains_house_1_16_1.h
+	loot/loot_tables/village_savanna_house_1_16_1.h
+	loot/loot_tables/village_shepherd_1_16_1.h
+	loot/loot_tables/village_snowy_house_1_16_1.h
+	loot/loot_tables/village_taiga_house_1_16_1.h
+	loot/loot_tables/village_tannery_1_16_1.h
+	loot/loot_tables/village_temple_1_16_1.h
+	loot/loot_tables/village_toolsmith_1_16_1.h
+	loot/loot_tables/village_weaponsmith_1_16_1.h
+	loot/cjson/cJSON.h
+)
+set(SOURCES
+	finders.c
+	carver.c
+	generator.c
+	layers.c
+	biomenoise.c
+	biomes.c
+	noise.c
+	terrainnoise.c
+	util.c
+	quadbase.c
+	xradv.c
+	features/end_city.c
+	features/fortress.c
+	features/ore.c
+	features/stronghold.c
+	features/mineshaft.c
+	features/dungeon.c
+	jigsaw/jigsaw.c
+	jigsaw/jigsaw_1_16_1.c
+	jigsaw/jigsaw_1_16_5.c
+	jigsaw/jigsaw_1_18_2.c
+	jigsaw/jigsaw_1_19_2.c
+	jigsaw/jigsaw_1_19_4.c
+	jigsaw/jigsaw_1_20_1.c
+	jigsaw/jigsaw_1_20_6.c
+	jigsaw/jigsaw_1_21_11.c
+	jigsaw/jigsaw_1_21_4.c
+	jigsaw/jigsaw_1_21_8.c
+	loot/items.c
+	loot/loot_functions.c
+	loot/loot_tables.c
+	loot/loot_table_context.c
+	loot/loot_table_parser.c
+	loot/loot_tables/ancient_city_1_20.c
+	loot/loot_tables/ancient_city_1_21_1.c
+	loot/loot_tables/ancient_city_1_21_6.c
+	loot/loot_tables/ancient_city_1_21_11.c
+	loot/loot_tables/ancient_city_26_1.c
+	loot/loot_tables/ancient_city_26_2.c
+	loot/loot_tables/ancient_city_ice_box_1_21_11.c
+	loot/loot_tables/ancient_city_ice_box_26_2.c
+	loot/loot_tables/bastion_bridge_1_16_1.c
+	loot/loot_tables/bastion_bridge_1_16_5.c
+	loot/loot_tables/bastion_bridge_1_20.c
+	loot/loot_tables/bastion_hoglin_stable_1_16_1.c
+	loot/loot_tables/bastion_hoglin_stable_1_16_5.c
+	loot/loot_tables/bastion_other_1_16_1.c
+	loot/loot_tables/bastion_other_1_16_5.c
+	loot/loot_tables/bastion_other_1_20.c
+	loot/loot_tables/bastion_other_1_21_1.c
+	loot/loot_tables/bastion_other_1_21_9.c
+	loot/loot_tables/bastion_treasure_1_16_1.c
+	loot/loot_tables/bastion_treasure_1_16_5.c
+	loot/loot_tables/buried_treasure_1_13.c
+	loot/loot_tables/buried_treasure_1_18.c
+	loot/loot_tables/buried_treasure_1_21_11.c
+	loot/loot_tables/desert_pyramid_1_13.c
+	loot/loot_tables/desert_pyramid_1_20.c
+	loot/loot_tables/desert_pyramid_1_21_6.c
+	loot/loot_tables/desert_pyramid_1_21_9.c
+	loot/loot_tables/desert_pyramid_1_21_11.c
+	loot/loot_tables/end_city_treasure_1_13.c
+	loot/loot_tables/end_city_treasure_1_20.c
+	loot/loot_tables/end_city_treasure_1_21_9.c
+	loot/loot_tables/end_city_treasure_1_21_11.c
+	loot/loot_tables/igloo_chest_1_13.c
+	loot/loot_tables/jungle_temple_1_13.c
+	loot/loot_tables/jungle_temple_1_14.c
+	loot/loot_tables/jungle_temple_1_20.c
+	loot/loot_tables/jungle_temple_1_21_6.c
+	loot/loot_tables/jungle_temple_1_21_9.c
+	loot/loot_tables/jungle_temple_1_21_11.c
+	loot/loot_tables/jungle_temple_dispenser_1_13.c
+	loot/loot_tables/nether_bridge_1_13.c
+	loot/loot_tables/nether_bridge_1_20.c
+	loot/loot_tables/nether_bridge_1_21_9.c
+	loot/loot_tables/pillager_outpost_1_14.c
+	loot/loot_tables/pillager_outpost_1_19_2.c
+	loot/loot_tables/pillager_outpost_1_20.c
+	loot/loot_tables/pillager_outpost_1_21_11.c
+	loot/loot_tables/ruined_portal_1_16_1.c
+	loot/loot_tables/ruined_portal_1_21_5.c
+	loot/loot_tables/shipwreck_map_1_13.c
+	loot/loot_tables/shipwreck_map_1_18.c
+	loot/loot_tables/shipwreck_map_1_20.c
+	loot/loot_tables/shipwreck_map_1_21_11.c
+	loot/loot_tables/shipwreck_supply_1_13.c
+	loot/loot_tables/shipwreck_supply_1_14.c
+	loot/loot_tables/shipwreck_supply_1_17.c
+	loot/loot_tables/shipwreck_supply_1_20.c
+	loot/loot_tables/shipwreck_supply_1_21_11.c
+	loot/loot_tables/shipwreck_treasure_1_13.c
+	loot/loot_tables/shipwreck_treasure_1_20.c
+	loot/loot_tables/shipwreck_treasure_1_21_11.c
+	loot/loot_tables/simple_dungeon_1_14.c
+	loot/loot_tables/stronghold_corridor_1_13.c
+	loot/loot_tables/stronghold_corridor_1_18.c
+	loot/loot_tables/stronghold_corridor_1_20.c
+	loot/loot_tables/stronghold_corridor_1_21_6.c
+	loot/loot_tables/stronghold_corridor_1_21_9.c
+	loot/loot_tables/stronghold_crossing_1_13.c
+	loot/loot_tables/stronghold_library_1_13.c
+	loot/loot_tables/stronghold_library_1_20.c
+	loot/loot_tables/village_armorer_1_16_1.c
+	loot/loot_tables/village_butcher_1_16_1.c
+	loot/loot_tables/village_cartographer_1_16_1.c
+	loot/loot_tables/village_desert_house_1_16_1.c
+	loot/loot_tables/village_fisher_1_16_1.c
+	loot/loot_tables/village_fletcher_1_16_1.c
+	loot/loot_tables/village_mason_1_16_1.c
+	loot/loot_tables/village_plains_house_1_16_1.c
+	loot/loot_tables/village_savanna_house_1_16_1.c
+	loot/loot_tables/village_shepherd_1_16_1.c
+	loot/loot_tables/village_snowy_house_1_16_1.c
+	loot/loot_tables/village_taiga_house_1_16_1.c
+	loot/loot_tables/village_tannery_1_16_1.c
+	loot/loot_tables/village_temple_1_16_1.c
+	loot/loot_tables/village_toolsmith_1_16_1.c
+	loot/loot_tables/village_weaponsmith_1_16_1.c
+	loot/cjson/cJSON.c
+)
+
+add_library(objects OBJECT ${SOURCES})
+set_property(TARGET objects PROPERTY POSITION_INDEPENDENT_CODE 1)
+
+add_library(cubiomes SHARED $<TARGET_OBJECTS:objects>)
+add_library(cubiomes_static STATIC $<TARGET_OBJECTS:objects>)
+
+if (WIN32)
+	set_target_properties(cubiomes PROPERTIES PREFIX "")
+endif()
+
+install(TARGETS cubiomes cubiomes_static DESTINATION lib)
+install(FILES ${HEADERS} DESTINATION include)
+
+option(EXPORT_HEADERS "Export project headers" OFF)
+
+if (EXPORT_HEADERS)
+	string(JOIN "\n" HEADER_LIST ${HEADERS})
+	file(WRITE "${CMAKE_BINARY_DIR}/headers.txt" "${HEADER_LIST}\n")
+endif()

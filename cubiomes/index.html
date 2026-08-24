@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEST</title>
+</head>
+<body>
+    <p>Hello!</p>
+    <script src="ancient.js"></script>
+    <script>
+        Module.onRuntimeInitialized = function() {
+            let MC_1_21_11 = 32;
+
+            const find_silence_trims = Module.cwrap(
+                'find_silence_trims',
+                'number',  // return type
+                // seed,   centerX,  centerZ,  rangeX,   rangeZ,    mc
+                ['number', 'number',"number", "number", "number", "number"]  // argument types
+            );
+            // n is needed for bigint
+            console.log('Result via cwrap:', find_silence_trims(3075358256516822746n, 0,0, 10000,10000, MC_1_21_11));
+        };
+    </script>
+</body>
+</html>

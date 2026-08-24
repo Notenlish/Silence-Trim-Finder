@@ -5,7 +5,7 @@ this assumes the file is named "find_biome_at.c":
 cmake -G "MinGW Makefiles"
 
 
-cmake . --build
+cmake --build . 
 
 dynamic:
-gcc find_biome_at.c -L. -lcubiomes -fwrapv -lm -o findbiomes.exe
+gcc ancient_city_silence_find.c -L. -lcubiomes -fwrapv -lm -o silence_find.exe
