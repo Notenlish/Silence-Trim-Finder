@@ -1,0 +1,59 @@
+---
+interface Props {
+  text: string;
+  type?: "text" | "number";
+  maxAbsRange?: number;
+  name: string;
+  id: string;
+  placeholder?: string;
+  hideInputSpin?: boolean;
+  classStyles?: string;
+  required?: boolean;
+  value?: string | number;
+}
+
+const {
+  name,
+  id,
+  text,
+  type = "text",
+  maxAbsRange,
+  placeholder,
+  classStyles = "",
+  hideInputSpin = false,
+  required = true,
+  value = null,
+} = Astro.props;
+
+const defaultStyles =
+  "w-full grow border border-gray-300 bg-gray-50 dark:border-slate-600/30 dark:bg-zinc-900/70";
+---
+
+<div class=`flex-col gap-1 ${classStyles}`>
+  <label class="block" for={id}>{text}</label>
+  {
+    type == "number" && maxAbsRange ? (
+      <input
+        value={value}
+        required={required}
+        class={`${hideInputSpin ? "hide-input-spin" : ""} ${defaultStyles}`}
+        placeholder={placeholder || ""}
+        id={id}
+        name={name}
+        type={type}
+        min={1}
+        max={maxAbsRange}
+      />
+    ) : (
+      <input
+        value={value}
+        required={required}
+        class={`${hideInputSpin ? "hide-input-spin" : ""} ${defaultStyles}`}
+        placeholder={placeholder || ""}
+        id={id}
+        name={name}
+        type={type}
+      />
+    )
+  }
+</div>

@@ -1,0 +1,75 @@
+---
+import FormButton from "./FormButton.astro";
+import Input from "./Input.astro";
+import InputSelect from "./InputSelect.astro";
+---
+
+<form class="p-4 w-full grid grid-cols-6 gap-4" id="finderForm">
+  <Input
+    classStyles="col-span-4"
+    hideInputSpin={true}
+    placeholder="6705935532593347361"
+    type="number"
+    text="World Seed"
+    name="seed"
+    id="seed"
+  />
+  <InputSelect
+    classStyles="col-span-2"
+    text="Version"
+    name="version"
+    id="version"
+    options={[
+      { text: "26.2", value: "26.2" },
+      { text: "26.1", value: "26.1" },
+      { text: "1.21.11", value: "1.21.11" },
+      { text: "1.21.6", value: "1.21.6" },
+      { text: "1.21.1", value: "1.21.1" },
+      { text: "1.20", value: "1.20" },
+    ]}
+  />
+  <Input
+    classStyles="col-span-3"
+    hideInputSpin={true}
+    placeholder="0"
+    type="number"
+    text="Center X"
+    name="centerX"
+    id="centerX"
+  />
+  <Input
+    classStyles="col-span-3"
+    hideInputSpin={true}
+    placeholder="0"
+    type="number"
+    text="Center Z"
+    name="centerZ"
+    id="centerZ"
+  />
+  <Input
+    classStyles="col-span-3"
+    hideInputSpin={true}
+    placeholder="0"
+    type="number"
+    text="X Range"
+    name="rangeX"
+    id="rangeX"
+    value={5000}
+    maxAbsRange={50_000}
+  />
+  <Input
+    classStyles="col-span-3"
+    hideInputSpin={true}
+    placeholder="0"
+    type="number"
+    text="Z Range"
+    name="rangeZ"
+    id="rangeZ"
+    value={5000}
+    maxAbsRange={50_000}
+  />
+  <FormButton classStyles="col-span-6" text="SCAN FOR SILENCE TRIMS" />
+  <p class="text-center w-full col-span-6 text-sm text-gray-600">
+    Please keep in mind this tool is not 100% accurate
+  </p>
+</form>

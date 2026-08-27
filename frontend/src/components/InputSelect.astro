@@ -1,0 +1,27 @@
+---
+interface Option {
+  text: string;
+  value: string;
+}
+
+interface Props {
+  text: string;
+  options: Option[];
+  name: string;
+  id: string;
+  classStyles?: string;
+}
+
+const { text, options, name, id, classStyles = "" } = Astro.props;
+---
+
+<div class={`${classStyles} flex-col gap-1`}>
+  <label class="block" for={id}>{text}</label>
+  <select class="grow w-full pt-px border border-gray-300 bg-gray-50 dark:border-slate-600/30 dark:bg-zinc-900/70" id={id} name={name}>
+    {
+      options.map((e) => {
+        return <option class="dark:bg-zinc-900 dark:text-gray-200" value={e.value}>{e.text}</option>;
+      })
+    }
+  </select>
+</div>

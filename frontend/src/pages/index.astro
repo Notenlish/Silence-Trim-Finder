@@ -1,0 +1,20 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Finder from "../components/Finder.astro";
+import Results from "../components/Results.astro";
+---
+
+<Layout>
+  <div class="h-full" id="container">
+    <main class="h-full">
+      <section class="h-full flex flex-col sm:grid sm:grid-cols-6">
+        <div
+          class="col-span-2 sm:border-r border-gray-300 dark:border-slate-600/30 border-t border-b border-gray-300 dark:border-slate-800/90"
+        >
+          <Finder />
+        </div>
+        <div class="col-span-4"><Results /></div>
+      </section>
+    </main>
+  </div>
+</Layout>

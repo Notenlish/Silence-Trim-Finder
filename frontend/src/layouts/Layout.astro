@@ -1,0 +1,54 @@
+---
+import "../styles/global.css";
+
+import "@fontsource-variable/geist-mono/wght.css";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Silence Armor Trim Finder for Minecraft Java Edition</title>
+  </head>
+  <script is:inline>
+    // On page load or when changing themes, best to add inline in `head` to avoid FOUC
+    document.addEventListener("DOMContentLoaded", () => {
+      document.documentElement.classList.toggle(
+        "dark",
+        localStorage.theme === "dark" ||
+          (!("theme" in localStorage) &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches),
+      );
+
+      if (!("theme" in localStorage)) {
+        if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+          localStorage.setItem("theme", "dark");
+        } else {
+          localStorage.setItem("theme", "light");
+        }
+      }
+    });
+  </script>
+  <script is:inline src="/ancient.js"></script>
+  <body class="font-mono flex flex-col">
+    <Header />
+    <main class="grow"><slot /></main>
+    <Footer />
+  </body>
+  <script is:inline src="/calculator.js"></script>
+</html>
+
+<style>
+  html,
+  body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+  }
+</style>

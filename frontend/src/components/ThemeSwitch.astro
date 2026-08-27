@@ -1,0 +1,28 @@
+---
+import Moon from "../assets/moon-outline.svg";
+import Sun from "../assets/sun-outline.svg";
+---
+
+<button id="themeSwitch" type="button" class="cursor-pointer size-6">
+  <Moon class={"dark:hidden size-6"} />
+  <Sun class={"hidden dark:block size-6"} />
+</button>
+
+<script>
+  const t = document.getElementById("themeSwitch");
+
+  t?.addEventListener("click", () => {
+    if (localStorage.getItem("theme") == "dark") {
+      localStorage.theme = "light";
+    } else if (localStorage.getItem("theme") == "light") {
+      localStorage.theme = "dark";
+    }
+
+    if (localStorage.getItem("theme") == "light") {
+      document.documentElement.classList.remove("dark");
+    }
+    if (localStorage.getItem("theme") == "dark") {
+      document.documentElement.classList.add("dark");
+    }
+  });
+</script>

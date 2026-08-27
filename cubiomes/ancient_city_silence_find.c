@@ -13,6 +13,15 @@
 
 // gcc ancient_city.c -L. -lcubiomes -fwrapv -lm -o ancient.exe
 
+// This must be the same value as the JS code
+#define MAX_CHESTS 500
+
+struct chest_position {
+  int64_t x;
+  int64_t y;
+  int64_t z;
+};
+
 static int floor_div(int a, int b) {
   int q = a / b;
   int r = a % b;
@@ -54,15 +63,14 @@ static int generated_loot_has_silence_trim(LootTableContext *ctx) {
  * Returns the number of matching chests found.
  */
 int searchAncientCitySilenceTrim(uint64_t seed, int mc, int centerBlockX,
-                                 int centerBlockZ, int rangeX, int rangeZ) {
+                                 int centerBlockZ, int rangeX, int rangeZ,
+                                 struct chest_position *chest_positions) {
   const int structureType = Ancient_City;
   StructureConfig sconf;
   Generator g;
   LootTableContext *lootCtx = NULL;
   LootTableContext *iceBoxCtx = NULL;
   int matches = 0;
-
-  printf("1");
 
   if (!getStructureConfig(structureType, mc, &sconf)) {
     fprintf(stderr, "Ancient cities are not supported for mc version %d\n", mc);
@@ -78,8 +86,6 @@ int searchAncientCitySilenceTrim(uint64_t seed, int mc, int centerBlockX,
     return 0;
   }
 
-  printf("2");
-  
   setupGenerator(&g, mc, 0);
   applySeed(&g, DIM_OVERWORLD, seed);
 
@@ -93,8 +99,6 @@ int searchAncientCitySilenceTrim(uint64_t seed, int mc, int centerBlockX,
   const int maxRegX = floor_div(maxBlockX, regionBlockSize);
   const int minRegZ = floor_div(minBlockZ, regionBlockSize);
   const int maxRegZ = floor_div(maxBlockZ, regionBlockSize);
-
-  printf("3");
 
   for (int regX = minRegX; regX <= maxRegX; regX++) {
     for (int regZ = minRegZ; regZ <= maxRegZ; regZ++) {
@@ -116,8 +120,6 @@ int searchAncientCitySilenceTrim(uint64_t seed, int mc, int centerBlockX,
                                            p.x >> 4, p.z >> 4, NULL, NULL,
                                            pieces, 1024, &nPieces, chests, 256);
 
-        printf("4");
-
       if (nChests < 0) {
         fprintf(stderr,
                 "Failed to generate ancient city jigsaw loot at (%d, %d)\n",
@@ -132,24 +134,29 @@ int searchAncientCitySilenceTrim(uint64_t seed, int mc, int centerBlockX,
           set_loot_seed(lootCtx, chests[i].lootSeed);
           generate_loot(lootCtx);
 
-          if (generated_loot_has_silence_trim(lootCtx)) {
-            matches++;
+          if (generated_loot_has_silence_trim(lootCtx) &&
+              matches < (MAX_CHESTS)) {
             printf("MATCH seed=%" PRIu64
                    " city=(%d,%d) chest=(%d %d %d) lootSeed=%" PRIu64
                    " pieces=%d chestIndex=%d\n",
                    seed, p.x, p.z, chests[i].x, chests[i].y, chests[i].z,
                    chests[i].lootSeed, nPieces, i);
+            chest_positions[matches].x = chests[i].x;
+            chest_positions[matches].y = chests[i].y;
+            chest_positions[matches].z = chests[i].z;
+
+            matches++;
           }
         } else if (is_ancient_city_ice_box_loot_table(chests[i].lootTable)) {
           // Ice boxes never contain silence trims, but generate their loot
           // anyway so loot generation can be verified against vanilla.
           set_loot_seed(iceBoxCtx, chests[i].lootSeed);
           generate_loot(iceBoxCtx);
-          printf("ICEBOX seed=%" PRIu64
-                 " city=(%d,%d) chest=(%d %d %d) lootSeed=%" PRIu64
-                 " items=%d\n",
-                 seed, p.x, p.z, chests[i].x, chests[i].y, chests[i].z,
-                 chests[i].lootSeed, iceBoxCtx->generated_item_count);
+          // printf("ICEBOX seed=%" PRIu64
+          //        " city=(%d,%d) chest=(%d %d %d) lootSeed=%" PRIu64
+          //        " items=%d\n",
+          //        seed, p.x, p.z, chests[i].x, chests[i].y, chests[i].z,
+          //        chests[i].lootSeed, iceBoxCtx->generated_item_count);
         }
       }
     }
@@ -224,61 +231,67 @@ static int parse_mc_version(const char *arg) {
   return -1;
 }
 
-int find_silence_trims(uint64_t seed, int centerX, int centerZ, int rangeX, int rangeZ, int mc) {
+int find_silence_trims(uint64_t seed, int centerX, int centerZ, int rangeX,
+                       int rangeZ, int mc, struct chest_position *output) {
   printf("Searching seed=%" PRIu64 " mc=%d center=(%d,%d) range=(%d,%d)\n",
          seed, mc, centerX, centerZ, rangeX, rangeZ);
-  int matches =
-      searchAncientCitySilenceTrim(seed, mc, centerX, centerZ, rangeX, rangeZ);
+  // struct chest_position chest_positions[MAX_CHESTS];
+
+  int matches = searchAncientCitySilenceTrim(seed, mc, centerX, centerZ, rangeX,
+                                             rangeZ, output);
+
   printf("Found %d silence trim chest(s).\n", matches);
   return matches;
+  // return 1;
 }
 
-int not_main(int argc, char **argv) {
-  uint64_t seed = 3075358256516822746ULL;
-  int centerX = 0;
-  int centerZ = 0;
-  int rangeX = 10000;
-  int rangeZ = 10000;
-  int mc = MC_1_21_11;
+// int not_main(int argc, char **argv) {
+//   uint64_t seed = 3075358256516822746ULL;
+//   int centerX = 0;
+//   int centerZ = 0;
+//   int rangeX = 10000;
+//   int rangeZ = 10000;
+//   int mc = MC_1_21_11;
 
-  // collect positional args, ignoring -mc <version> flag pairs
-  int positional[8];
-  int npos = 0;
-  for (int i = 1; i < argc; i++) {
-    if (strcmp(argv[i], "-mc") == 0 && i + 1 < argc) {
-      mc = parse_mc_version(argv[++i]);
-      if (mc < 0) {
-        fprintf(stderr, "Invalid version '%s'\n", argv[i]);
-        return 1;
-      }
-    } else {
-      positional[npos++] = i;
-    }
-  }
+//   // collect positional args, ignoring -mc <version> flag pairs
+//   int positional[8];
+//   int npos = 0;
+//   for (int i = 1; i < argc; i++) {
+//     if (strcmp(argv[i], "-mc") == 0 && i + 1 < argc) {
+//       mc = parse_mc_version(argv[++i]);
+//       if (mc < 0) {
+//         fprintf(stderr, "Invalid version '%s'\n", argv[i]);
+//         return 1;
+//       }
+//     } else {
+//       positional[npos++] = i;
+//     }
+//   }
 
-  if (npos > 0)
-    seed = strtoull(argv[positional[0]], NULL, 10);
-  if (npos > 2) {
-    centerX = atoi(argv[positional[1]]);
-    centerZ = atoi(argv[positional[2]]);
-  }
-  if (npos > 4) {
-    rangeX = atoi(argv[positional[3]]);
-    rangeZ = atoi(argv[positional[4]]);
-  }
-  if (npos > 5) {
-    mc = parse_mc_version(argv[positional[5]]);
-    if (mc < 0) {
-      fprintf(stderr, "Invalid version '%s'\n", argv[positional[5]]);
-      return 1;
-    }
-  }
+//   if (npos > 0)
+//     seed = strtoull(argv[positional[0]], NULL, 10);
+//   if (npos > 2) {
+//     centerX = atoi(argv[positional[1]]);
+//     centerZ = atoi(argv[positional[2]]);
+//   }
+//   if (npos > 4) {
+//     rangeX = atoi(argv[positional[3]]);
+//     rangeZ = atoi(argv[positional[4]]);
+//   }
+//   if (npos > 5) {
+//     mc = parse_mc_version(argv[positional[5]]);
+//     if (mc < 0) {
+//       fprintf(stderr, "Invalid version '%s'\n", argv[positional[5]]);
+//       return 1;
+//     }
+//   }
 
-  printf("Searching seed=%" PRIu64 " mc=%d center=(%d,%d) range=(%d,%d)\n",
-         seed, mc, centerX, centerZ, rangeX, rangeZ);
-  int matches =
-      searchAncientCitySilenceTrim(seed, mc, centerX, centerZ, rangeX, rangeZ);
-  printf("Found %d silence trim chest(s).\n", matches);
+//   printf("Searching seed=%" PRIu64 " mc=%d center=(%d,%d) range=(%d,%d)\n",
+//          seed, mc, centerX, centerZ, rangeX, rangeZ);
+//   int matches =
+//       searchAncientCitySilenceTrim(seed, mc, centerX, centerZ, rangeX,
+//       rangeZ);
+//   printf("Found %d silence trim chest(s).\n", matches);
 
-  return 0;
-}
+//   return 0;
+// }

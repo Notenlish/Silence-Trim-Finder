@@ -1,0 +1,13 @@
+---
+interface Props {
+  text: string;
+  classStyles?: string;
+}
+
+const { text, classStyles = "" } = Astro.props;
+---
+
+<button
+  class={`${classStyles} cursor-pointer h-12 w-full border-0 bg-cyan-500 font-semibold tracking-wide text-background`}
+  type="submit">{text}</button
+>

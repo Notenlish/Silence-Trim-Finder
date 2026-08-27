@@ -1,0 +1,31 @@
+---
+import Heart from "../assets/heart.svg";
+import { navigationLinks } from "../data/navigation";
+
+interface Props {
+  size?: "big" | "minimal";
+  text?: string;
+}
+
+const { size = "big", text = "Donate" } = Astro.props;
+
+const anchorStyles =
+  "text-rose-500 dark:text-rose-700 text-base bg-rose-100 dark:bg-rose-950/60";
+---
+
+{
+  size == "big" ? (
+    <a
+      target="_blank"
+      href={navigationLinks.donate}
+      class={`${anchorStyles} h-8 gap-2 items-center px-2 rounded flex`}
+    >
+      <span class="">{text}</span>
+      <Heart class="size-6" />
+    </a>
+  ) : (
+    <a target="_blank" class={`${anchorStyles} size-8 rounded`}>
+      <Heart class="size-6" />
+    </a>
+  )
+}
