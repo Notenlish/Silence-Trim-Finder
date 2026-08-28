@@ -11,8 +11,15 @@ import Footer from "../components/Footer.astro";
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href=`${import.meta.env.DEV ? "" : import.meta.env.BASE_URL}/favicon.svg`
+    />
+    <link
+      rel="icon"
+      href=`${import.meta.env.DEV ? "" : import.meta.env.BASE_URL}/favicon.ico`
+    />
     <meta name="generator" content={Astro.generator} />
     <title>Silence Armor Trim Finder for Minecraft Java Edition</title>
   </head>
@@ -35,13 +42,19 @@ import Footer from "../components/Footer.astro";
       }
     });
   </script>
-  <script is:inline src=`${import.meta.env.DEV ? "" : import.meta.env.BASE_URL}/ancient.js`></script>
+  <script
+    is:inline
+    src=`${import.meta.env.DEV ? "" : import.meta.env.BASE_URL}/ancient.js`
+  ></script>
   <body class="font-mono flex flex-col">
     <Header />
     <main class="grow"><slot /></main>
     <Footer />
   </body>
-  <script is:inline src=`${import.meta.env.DEV ? "" : import.meta.env.BASE_URL}/calculator.js`></script>
+  <script
+    is:inline
+    src=`${import.meta.env.DEV ? "" : import.meta.env.BASE_URL}/calculator.js`
+  ></script>
 </html>
 
 <style>
