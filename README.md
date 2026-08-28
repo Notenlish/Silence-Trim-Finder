@@ -27,10 +27,12 @@ and then you need to compile ancient_city_silence_find.c with emcc and load the 
 
 stack size needs to be bigger bcuz cubiomes initializes a bunch of things and 64kb isnt enough
 
-emcc ancient_city_silence_find.c -L build -lcubiomes -fwrapv -lm -sEXPORTED_FUNCTIONS=_find_silence_trims,_searchAncientCitySilenceTrim,_malloc,_free -sEXPORTED_RUNTIME_METHODS=ccall,cwrap,HEAP64 -sINITIAL_MEMORY=1610612736 -sSTACK_SIZE=8388608 -sSAFE_HEAP=1 -sASSERTIONS=2 -Wall -Wextra -Wpedantic -o ancient.js
+67108864 bytes = 64mb
+8388608 bytes = 8mb
 
-
-emcc ancient_city_silence_find.c -L build -lcubiomes -fwrapv -lm -sEXPORTED_FUNCTIONS=_find_silence_trims,_searchAncientCitySilenceTrim,_malloc,_free -sEXPORTED_RUNTIME_METHODS=ccall,cwrap,HEAP64 -sINITIAL_MEMORY=1610612736 -sSTACK_SIZE=8388608 -sSAFE_HEAP=1 -sASSERTIONS=2 -sALLOW_MEMORY_GROWTH=1 -sMAXIMUM_MEMORY=2147483648 -Wall -Wextra -Wpedantic -o ancient.js
+```
+emcc ancient_city_silence_find.c -L build -lcubiomes -fwrapv -lm -sEXPORTED_FUNCTIONS=_find_silence_trims,_searchAncientCitySilenceTrim,_malloc,_free -sEXPORTED_RUNTIME_METHODS=ccall,cwrap,HEAP64 -sINITIAL_MEMORY=67108864 -sSTACK_SIZE=8388608 -sSAFE_HEAP=1 -sASSERTIONS=2 -sALLOW_MEMORY_GROWTH=1 -sMAXIMUM_MEMORY=2147483648 -Wall -Wextra -Wpedantic -o ancient.js
+```
 
 
 
