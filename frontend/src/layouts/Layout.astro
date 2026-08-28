@@ -35,13 +35,13 @@ import Footer from "../components/Footer.astro";
       }
     });
   </script>
-  <script is:inline src="/ancient.js"></script>
+  <script is:inline src=`${import.meta.env.BASE_URL}/ancient.js`></script>
   <body class="font-mono flex flex-col">
     <Header />
     <main class="grow"><slot /></main>
     <Footer />
   </body>
-  <script is:inline src="/calculator.js"></script>
+  <script is:inline src=`${import.meta.env.BASE_URL}/calculator.js`></script>
 </html>
 
 <style>
