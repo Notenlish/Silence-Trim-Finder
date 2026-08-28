@@ -1,5 +1,9 @@
 # Silence Trim Finder
 
+This a local-only web tool for finding silence armor trim. It uses https://github.com/xpple/cubiomes spesifically the PR by https://github.com/xpple/cubiomes/pull/35 Colin-Henry, modified a bit for ancient city loot generation. 
+
+code in cubiomes directory is from https://github.com/Notenlish/cubiomes `jigsawBastionVillage` branch, modified a bit, fixed an error when compiling for emscripten(I added `#include "../carver.h" to some files in features/*.c`).
+
 ## Development
 this uses emscripten to compile to WASM
 
@@ -63,5 +67,4 @@ to build run `pnpm run build`
 
 MIT
 
-code in cubiomes is from https://github.com/Notenlish/cubiomes, `jigsawBastionVillage` branch, modified a bit, fixed an error when compiling for emscripten(I added `#include "../carver.h" to some files in features/*.c`).
 
