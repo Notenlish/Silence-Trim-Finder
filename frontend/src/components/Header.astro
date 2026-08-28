@@ -5,7 +5,7 @@ import Donate from "../components/Donate.astro";
 
 <header class="py-1 px-3 w-full flex content-between items-center">
   <div class="h-12 text-base font-bold grow items-center flex gap-3 sm:gap-4">
-    <img class="h-6" src="/silence-trim.webp" />
+    <img class="h-6" src=`${import.meta.env.DEV ? "" : import.meta.env.BASE_URL}/silence-trim.webp` />
     <h1>Silence Trim Finder</h1>
   </div>
   <div><Donate size="big" /></div>
