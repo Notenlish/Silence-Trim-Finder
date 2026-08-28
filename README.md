@@ -32,6 +32,7 @@ and then you need to compile ancient_city_silence_find.c with emcc and load the 
 stack size needs to be bigger bcuz cubiomes initializes a bunch of things and 64kb isnt enough
 
 67108864 bytes = 64mb
+
 8388608 bytes = 8mb
 
 ```
