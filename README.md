@@ -4,6 +4,8 @@ This a local-only web tool for finding silence armor trim. It uses https://githu
 
 code in cubiomes directory is from https://github.com/Notenlish/cubiomes `jigsawBastionVillage` branch, modified a bit, fixed an error when compiling for emscripten(I added `#include "../carver.h" to some files in features/*.c`).
 
+TODO: make a python script for compiling to wasm / win64 using mingw
+
 ## Development
 this uses emscripten to compile to WASM
 
@@ -36,9 +38,8 @@ stack size needs to be bigger bcuz cubiomes initializes a bunch of things and 64
 8388608 bytes = 8mb
 
 ```
-emcc ancient_city_silence_find.c -L build -lcubiomes -fwrapv -lm -sEXPORTED_FUNCTIONS=_find_silence_trims,_searchAncientCitySilenceTrim,_malloc,_free -sEXPORTED_RUNTIME_METHODS=ccall,cwrap,HEAP64 -sINITIAL_MEMORY=67108864 -sSTACK_SIZE=8388608 -sSAFE_HEAP=1 -sASSERTIONS=2 -sALLOW_MEMORY_GROWTH=1 -sMAXIMUM_MEMORY=2147483648 -Wall -Wextra -Wpedantic -o ancient.js
+emcc ancient_city_silence_find.c -L build -lcubiomes -fwrapv -lm -sEXPORTED_FUNCTIONS=_find_silence_trims,_searchAncientCitySilenceTrim,_searchAncientCityForTrims,_malloc,_free -sEXPORTED_RUNTIME_METHODS=ccall,cwrap,HEAP64 -sINITIAL_MEMORY=67108864 -sSTACK_SIZE=8388608 -sSAFE_HEAP=1 -sASSERTIONS=2 -sALLOW_MEMORY_GROWTH=1 -sMAXIMUM_MEMORY=2147483648 -Wall -Wextra -Wpedantic -o ancient.js
 ```
-
 
 
 emcc ancient_city_silence_find.c -L build -lcubiomes \
