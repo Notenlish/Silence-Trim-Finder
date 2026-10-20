@@ -7,6 +7,7 @@
 #include "tables/btree21wd.h"
 #include "tables/btree215.h"
 #include "tables/btree262.h"
+#include "tables/btree263.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -1447,9 +1448,73 @@ int get_resulting_node(const uint64_t np[6], const BiomeTree *bt, int idx,
     return leaf;
 }
 
+static uint64_t get_np_dist263(const uint64_t np[6], int idx)
+{
+    const BTree263Node *node = &btree263_nodes[idx];
+    uint64_t ds = 0, d;
+    uint32_t i;
+
+    for (i = 0; i < 6; i++)
+    {
+        int64_t a = (int64_t)np[i] - node->range[2*i + 1];
+        int64_t b = (int64_t)node->range[2*i] - np[i];
+        d = a > 0 ? (uint64_t)a : b > 0 ? (uint64_t)b : 0;
+        ds += d * d;
+    }
+    return ds;
+}
+
+static int get_resulting_node263(const uint64_t np[6], int idx,
+    int cand, uint64_t ds)
+{
+    const BTree263Node *node = &btree263_nodes[idx];
+    uint32_t i;
+
+    if (node->childCount == 0)
+        return idx;
+
+    int leaf = cand;
+    for (i = 0; i < node->childCount; i++)
+    {
+        int inner = btree263_children[node->childStart + i];
+        uint64_t ds_inner = get_np_dist263(np, inner);
+        if (ds_inner < ds)
+        {
+            int leaf2 = get_resulting_node263(np, inner, leaf, ds);
+            uint64_t ds_leaf2 = inner == leaf2 ? ds_inner : get_np_dist263(np, leaf2);
+            if (ds_leaf2 < ds)
+            {
+                ds = ds_leaf2;
+                leaf = leaf2;
+            }
+        }
+    }
+    return leaf;
+}
+
 ATTR(hot, flatten)
 int climateToBiome(int mc, const uint64_t np[6], uint64_t *dat)
 {
+    if (mc >= MC_26_3)
+    {
+        int alt = -1;
+        uint64_t ds = (uint64_t)-1;
+        if (dat)
+        {
+            int a = (int)*dat;
+            if (a >= 0 && a < (int)(sizeof(btree263_nodes) / sizeof(btree263_nodes[0])) &&
+                btree263_nodes[a].biome != 0xff)
+            {
+                alt = a;
+                ds = get_np_dist263(np, a);
+            }
+        }
+        int idx = get_resulting_node263(np, 0, alt, ds);
+        if (dat)
+            *dat = (uint64_t)idx;
+        return btree263_nodes[idx].biome;
+    }
+
     static const BiomeTree btree18 = {
         btree18_steps, &btree18_param[0][0], btree18_nodes, btree18_order,
         sizeof(btree18_nodes) / sizeof(uint64_t)

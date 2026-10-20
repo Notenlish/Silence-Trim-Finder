@@ -139,3 +139,4 @@ dist
 .yarn/install-state.gz
 .pnp.*
 /cubiomes/build
+/cubiomes/build-zig

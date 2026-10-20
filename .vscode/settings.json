@@ -1,3 +1,9 @@
 {
-    "tailwindCSS.classAttributes": ["class", "className", ".*Styles.*", ".*Tw.*"]
+    "tailwindCSS.classAttributes": [
+        "class",
+        "className",
+        ".*Styles.*",
+        ".*Tw.*"
+    ],
+    "cmake.sourceDirectory": "C:/Users/noten/Documents/GitHub/Silence-Trim-Finder/cubiomes"
 }

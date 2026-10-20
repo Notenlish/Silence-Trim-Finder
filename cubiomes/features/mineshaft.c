@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "piece.h"
+
 #include "../carver.h"
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
@@ -1029,6 +1030,7 @@ int getMineshaftLoot(Generator *g, SurfaceNoise *sn, Piece *list, int n, Structu
         }
     }
     free(carverCache);
+    free(detailsCache);
     free(chunkXs);
     free(chunkZs);
     free(removed);

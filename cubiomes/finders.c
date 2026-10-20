@@ -124,6 +124,7 @@ int getStructureConfig_default(int structureType, int mc, StructureConfig *sconf
     s_ancient_city          = { 20083232, 24, 16, Ancient_City,     0,0},
     s_trail_ruins           = { 83469867, 34, 26, Trail_Ruins,      0,0},
     s_trial_chambers        = { 94251327, 34, 22, Trial_Chambers,   0,0},
+    s_abandoned_camp        = { 91231127, 37, 29, Abandoned_Camp,   0,0},
     s_treasure              = { 10387320,  1,  1, Treasure,         0,0},
     s_mineshaft             = {        0,  1,  1, Mineshaft,        0,0},
     s_desert_well_115       = {    30010,  1,  1, Desert_Well,      0, 1.f/1000},
@@ -232,6 +233,9 @@ int getStructureConfig_default(int structureType, int mc, StructureConfig *sconf
     case Trial_Chambers:
         *sconf = s_trial_chambers;
         return mc >= MC_1_21_1;
+    case Abandoned_Camp:
+        *sconf = s_abandoned_camp;
+        return mc >= MC_26_3;
     default:
         memset(sconf, 0, sizeof(StructureConfig));
         return 0;
@@ -493,6 +497,7 @@ int getStructurePos(int structureType, int mc, uint64_t seed, int regX, int regZ
     case Ancient_City:
     case Trail_Ruins:
     case Trial_Chambers:
+    case Abandoned_Camp:
         *pos = getFeaturePos(sconf, seed, regX, regZ);
         return 1;
 
@@ -1878,6 +1883,32 @@ int isViableFeatureBiome(int mc, int structureType, int biomeID)
         if (mc <= MC_1_20) return 0;
         return biomeID != deep_dark && isOverworld(mc, biomeID);
 
+    case Abandoned_Camp:
+        if (mc < MC_26_3) return 0;
+        switch (biomeID) {
+        case meadow:
+        case cherry_grove:
+        case forest:
+        case birch_forest:
+        case old_growth_birch_forest:
+        case flower_forest:
+        case windswept_forest:
+        case dappled_forest:
+        case taiga:
+        case snowy_taiga:
+        case old_growth_spruce_taiga:
+        case old_growth_pine_taiga:
+        case sparse_jungle:
+        case bamboo_jungle:
+        case swamp:
+        case savanna:
+        case wooded_badlands:
+        case pale_garden:
+            return 1;
+        default:
+            return 0;
+        }
+
     case Treasure:
         if (mc <= MC_1_12) return 0;
         return biomeID == beach || biomeID == snowy_beach;
@@ -2169,6 +2200,9 @@ int isViableStructurePos(int structureType, Generator *g, int x, int z, uint32_t
 
     switch (structureType)
     {
+    case Abandoned_Camp:
+        if (g->mc < MC_26_3) goto L_not_viable;
+        goto L_feature;
     case Trail_Ruins:
         if (g->mc <= MC_1_19) goto L_not_viable;
         goto L_feature;
@@ -3059,6 +3093,7 @@ int getLootTableCountForStructure(int structure, int mc) {
     case End_Island: return 0;
     case Trail_Ruins: return 0;
     case Trial_Chambers: return 13;
+    case Abandoned_Camp: return 0;
     case Stronghold: return 3;
     default:
         fprintf(stderr, "getLootTableCountForStructure: not implemented for structure %s.\n", struct2str(structure));
@@ -6316,6 +6351,10 @@ static const int g_biome_para_range_262_diff[][13] = {
 {sulfur_caves            ,  IMIN, IMAX,  IMIN, IMAX,  IMIN, IMAX,  IMIN, IMAX,  2000, 9000,  IMIN,-9500},
 {-1,0,0,0,0,0,0,0,0,0,0,0,0}};
 
+static const int g_biome_para_range_263_diff[][13] = {
+{dappled_forest          , -4500,-1500,  IMIN,-3500, -1900, IMAX,  IMIN, IMAX,     0, IMAX,  -500, IMAX},
+{-1,0,0,0,0,0,0,0,0,0,0,0,0}};
+
 /**
  * Gets the min/max parameter values within which a biome change can occur.
  */
@@ -6353,6 +6392,14 @@ const int *getBiomeParaLimits(int mc, int id)
     if (mc <= MC_1_17)
         return NULL;
     int i;
+    if (mc > MC_26_2)
+    {
+        for (i = 0; g_biome_para_range_263_diff[i][0] != -1; i++)
+        {
+            if (g_biome_para_range_263_diff[i][0] == id)
+                return &g_biome_para_range_263_diff[i][1];
+        }
+    }
     if (mc > MC_26_1)
     {
         for (i = 0; g_biome_para_range_262_diff[i][0] != -1; i++)

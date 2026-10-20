@@ -14,6 +14,9 @@ int biomeExists(int mc, int id)
         if (id == sulfur_caves)
             return mc >= MC_26_2;
 
+        if (id == dappled_forest)
+            return mc >= MC_26_3;
+
         if (id == pale_garden)
             return mc >= MC_1_21_4;
 
@@ -282,6 +285,7 @@ int getCategory(int mc, int id)
     case tall_birch_forest:
     case tall_birch_hills:
     case dark_forest_hills:
+    case dappled_forest:
         return forest;
 
     case snowy_tundra:

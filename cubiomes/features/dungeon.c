@@ -3,10 +3,10 @@
 #include "mineshaft.h"
 #include "../rng.h"
 
+#include "../carver.h"
+
 #include <stdlib.h>
 #include <string.h>
-
-#include "../carver.h"
 
 void createDungeonRoomList(DungeonRoomList *list, int initialCapacity) {
     list->rooms = (DungeonRoom*)malloc(initialCapacity * sizeof(DungeonRoom));

@@ -2,10 +2,11 @@
 
 #include <string.h>
 
+#include "../carver.h"
+
 #include "piece.h"
 #include "mineshaft.h"
 #include "dungeon.h"
-#include "../carver.h"
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))

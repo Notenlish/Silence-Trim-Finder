@@ -40,6 +40,7 @@ enum StructureType
     Trail_Ruins,
     Trial_Chambers,
     Stronghold, // not like the other structures, but nice to have a constant for it
+    Abandoned_Camp,
     FEATURE_NUM
 };
 
