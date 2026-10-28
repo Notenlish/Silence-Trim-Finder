@@ -25,6 +25,7 @@ let centerZ = null;
 let rangeX = null;
 let rangeZ = null;
 let version = null;
+let largeBiomes = false;
 
 let positions = [];
 
@@ -32,10 +33,10 @@ let bufferPtr;
 Module.onRuntimeInitialized = function () {
   bufferPtr = Module._malloc(bufferSize);
   find_silence_trims = Module.cwrap(
-    "find_silence_trims",
+    "find_silence_trims_with_biomes",
     "number", // return type
-    // seed,   centerX,  centerZ,  rangeX,   rangeZ,    mc        output
-    ["bigint", "number", "number", "number", "number", "number", "number"], // argument types
+    // seed, centerX, centerZ, rangeX, rangeZ, mc, output, largeBiomes
+    ["bigint", "number", "number", "number", "number", "number", "number", "number"],
   );
 
   // console.log('Result via cwrap:', find_silence_trims(31, 0, 0, 10000, 10000, MC_1_21_11));
@@ -50,6 +51,7 @@ const calculatePositions = () => {
     rangeZ,
     MC_VERSIONS[version],
     bufferPtr,
+    Number(largeBiomes),
   );
   console.log(
     `results for seed ${seed} version ${version} is ${matches} matches`,
@@ -91,6 +93,7 @@ finderForm.addEventListener("submit", (event) => {
   rangeX = d["rangeX"];
   rangeZ = d["rangeZ"];
   version = d["version"];
+  largeBiomes = d["worldType"] === "large-biomes";
 
   if (MC_VERSIONS[version] === undefined) {
     console.error(`Unsupported Minecraft version: ${version}`);

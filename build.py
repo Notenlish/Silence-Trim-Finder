@@ -28,6 +28,7 @@ WASM_BUILD = CUBIOMES / "build-wasm"
 WASM_EXPORTS = ",".join(
     [
         "_find_silence_trims",
+        "_find_silence_trims_with_biomes",
         "_find_ward_trims",
         "_searchAncientCityForTrims",
         "_malloc",

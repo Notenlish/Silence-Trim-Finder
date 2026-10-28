@@ -19,6 +19,16 @@ templates are semantically unchanged from 26.2/1.21.11 (only the JSON/NBT schema
 changed), so the existing 26.2 loot table and 1.21.11 jigsaw data are reused.
 
 ## Development
+Select **World Type → Large Biomes** in the finder for a Java Edition Large
+Biomes world. Default remains selected for normal worlds. The choice changes
+the biome generator used to check ancient-city locations; searches still run
+locally in your browser.
+
+The WASM entry point `find_silence_trims_with_biomes(seed, centerX, centerZ,
+rangeX, rangeZ, mc, output, largeBiomes)` accepts `0` for Default and `1` for
+Large Biomes. The original `find_silence_trims` entry point keeps its default-world
+behavior. Rebuild with `python build.py --wasm` after changing the C source.
+
 this uses emscripten to compile to WASM
 
 https://emscripten.org/docs/getting_started/downloads.html
@@ -50,13 +60,13 @@ stack size needs to be bigger bcuz cubiomes initializes a bunch of things and 64
 8388608 bytes = 8mb
 
 ```
-emcc ancient_city_silence_find.c -L build -lcubiomes_static -fwrapv -lm -sEXPORTED_FUNCTIONS=_find_silence_trims,_find_ward_trims,_searchAncientCityForTrims,_malloc,_free -sEXPORTED_RUNTIME_METHODS=ccall,cwrap,HEAP64 -sINITIAL_MEMORY=67108864 -sSTACK_SIZE=8388608 -sALLOW_MEMORY_GROWTH=1 -sMAXIMUM_MEMORY=2147483648 -O3 -Wall -Wextra -Wpedantic -o ancient.js
+emcc ancient_city_silence_find.c -L build -lcubiomes_static -fwrapv -lm -sEXPORTED_FUNCTIONS=_find_silence_trims,_find_silence_trims_with_biomes,_find_ward_trims,_searchAncientCityForTrims,_malloc,_free -sEXPORTED_RUNTIME_METHODS=ccall,cwrap,HEAP64 -sINITIAL_MEMORY=67108864 -sSTACK_SIZE=8388608 -sALLOW_MEMORY_GROWTH=1 -sMAXIMUM_MEMORY=2147483648 -O3 -Wall -Wextra -Wpedantic -o ancient.js
 ```
 
 
 emcc ancient_city_silence_find.c -L build -lcubiomes_static \
      -fwrapv -lm \
-     -sEXPORTED_FUNCTIONS=_find_silence_trims,_find_ward_trims,_searchAncientCityForTrims,_malloc,_free \
+     -sEXPORTED_FUNCTIONS=_find_silence_trims,_find_silence_trims_with_biomes,_find_ward_trims,_searchAncientCityForTrims,_malloc,_free \
      -sEXPORTED_RUNTIME_METHODS=ccall,cwrap,HEAP64 \
      -sALLOW_MEMORY_GROWTH=1 \
      -sMAXIMUM_MEMORY=2147483648 \

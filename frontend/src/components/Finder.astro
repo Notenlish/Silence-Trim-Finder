@@ -71,6 +71,16 @@ import InputSelect from "./InputSelect.astro";
     value={5000}
     maxAbsRange={50_000}
   />
+  <InputSelect
+    classStyles="col-span-6"
+    text="World Type"
+    name="worldType"
+    id="worldType"
+    options={[
+      { text: "Default", value: "default" },
+      { text: "Large Biomes", value: "large-biomes" },
+    ]}
+  />
   <FormButton classStyles="col-span-6" text="FIND SILENCE TRIMS" />
   <p class="text-center w-full col-span-6 text-sm text-gray-600">
     Please keep in mind this tool is not 100% accurate

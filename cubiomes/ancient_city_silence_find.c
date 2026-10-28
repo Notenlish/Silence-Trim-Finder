@@ -73,10 +73,11 @@ static int generated_loot_has_item(enum Item target, LootTableContext *ctx) {
  * Prints every ancient city chest that generates a silence armor trim.
  * Returns the number of matching chests found.
  */
-int searchAncientCityForTrims(uint64_t seed, int mc, int centerBlockX,
+static int searchAncientCityForTrimsWithBiomes(uint64_t seed, int mc, int centerBlockX,
                               int centerBlockZ, int rangeX, int rangeZ,
                               enum Item item,
-                              struct chest_position *chest_positions) {
+                              struct chest_position *chest_positions,
+                              int largeBiomes) {
   const int structureType = Ancient_City;
   StructureConfig sconf;
   Generator g;
@@ -98,7 +99,7 @@ int searchAncientCityForTrims(uint64_t seed, int mc, int centerBlockX,
     return 0;
   }
 
-  setupGenerator(&g, mc, 0);
+  setupGenerator(&g, mc, largeBiomes ? LARGE_BIOMES : 0);
   applySeed(&g, DIM_OVERWORLD, seed);
 
   const uint64_t structureSeed = seed & ((1ULL << 48) - 1);
@@ -175,6 +176,25 @@ int searchAncientCityForTrims(uint64_t seed, int mc, int centerBlockX,
   }
 
   return matches;
+}
+
+// Preserve the default-world API for existing WASM and native callers.
+int searchAncientCityForTrims(uint64_t seed, int mc, int centerBlockX,
+                              int centerBlockZ, int rangeX, int rangeZ,
+                              enum Item item,
+                              struct chest_position *chest_positions) {
+  return searchAncientCityForTrimsWithBiomes(
+      seed, mc, centerBlockX, centerBlockZ, rangeX, rangeZ, item,
+      chest_positions, 0);
+}
+
+int find_silence_trims_with_biomes(uint64_t seed, int centerX, int centerZ,
+                                  int rangeX, int rangeZ, int mc,
+                                  struct chest_position *output,
+                                  int largeBiomes) {
+  return searchAncientCityForTrimsWithBiomes(
+      seed, mc, centerX, centerZ, rangeX, rangeZ,
+      ITEM_SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE, output, largeBiomes);
 }
 
 /*
