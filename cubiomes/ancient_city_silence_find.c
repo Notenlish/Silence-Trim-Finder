@@ -226,6 +226,8 @@ static int parse_mc_version(const char *arg) {
       return MC_26_1;
     if (major == 26 && minor == 2 && patch == 0)
       return MC_26_2;
+    if (major == 26 && minor == 3 && patch == 0)
+      return MC_26_3;
     return -1;
   }
 
@@ -239,6 +241,8 @@ static int parse_mc_version(const char *arg) {
       return MC_26_1;
     if (a == 26 && b == 2)
       return MC_26_2;
+    if (a == 26 && b == 3)
+      return MC_26_3;
   }
   return -1;
 }

@@ -4,7 +4,19 @@ This a local-only web tool for finding silence armor trim. It uses https://githu
 
 code in cubiomes directory is from https://github.com/Notenlish/cubiomes `jigsawBastionVillage` branch, modified a bit, fixed an error when compiling for emscripten(I added `#include "../carver.h" to some files in features/*.c`).
 
-TODO: make a python script for compiling to wasm / win64 using mingw
+Windows and WASM builds can be produced with `build.py`:
+
+```bash
+python build.py --native  # MinGW/CMake library + silence.exe
+python build.py --wasm    # Emscripten module, copied into frontend/public
+python build.py           # both
+```
+
+The wasm build requires an activated Emscripten SDK with `emcc`/`emcmake` on
+`PATH`. Minecraft 26.3 (`MC_26_3`, enum value 35) is supported by the current
+module. Its ancient-city loot tables, structure config, template pools and
+templates are semantically unchanged from 26.2/1.21.11 (only the JSON/NBT schema
+changed), so the existing 26.2 loot table and 1.21.11 jigsaw data are reused.
 
 ## Development
 this uses emscripten to compile to WASM
@@ -38,22 +50,19 @@ stack size needs to be bigger bcuz cubiomes initializes a bunch of things and 64
 8388608 bytes = 8mb
 
 ```
-emcc ancient_city_silence_find.c -L build -lcubiomes -fwrapv -lm -sEXPORTED_FUNCTIONS=_find_silence_trims,_searchAncientCitySilenceTrim,_searchAncientCityForTrims,_malloc,_free -sEXPORTED_RUNTIME_METHODS=ccall,cwrap,HEAP64 -sINITIAL_MEMORY=67108864 -sSTACK_SIZE=8388608 -sSAFE_HEAP=1 -sASSERTIONS=2 -sALLOW_MEMORY_GROWTH=1 -sMAXIMUM_MEMORY=2147483648 -Wall -Wextra -Wpedantic -o ancient.js
+emcc ancient_city_silence_find.c -L build -lcubiomes_static -fwrapv -lm -sEXPORTED_FUNCTIONS=_find_silence_trims,_find_ward_trims,_searchAncientCityForTrims,_malloc,_free -sEXPORTED_RUNTIME_METHODS=ccall,cwrap,HEAP64 -sINITIAL_MEMORY=67108864 -sSTACK_SIZE=8388608 -sALLOW_MEMORY_GROWTH=1 -sMAXIMUM_MEMORY=2147483648 -O3 -Wall -Wextra -Wpedantic -o ancient.js
 ```
 
 
-emcc ancient_city_silence_find.c -L build -lcubiomes \
+emcc ancient_city_silence_find.c -L build -lcubiomes_static \
      -fwrapv -lm \
-     -sEXPORTED_FUNCTIONS=_find_silence_trims,_searchAncientCitySilenceTrim,_malloc,_free \
+     -sEXPORTED_FUNCTIONS=_find_silence_trims,_find_ward_trims,_searchAncientCityForTrims,_malloc,_free \
      -sEXPORTED_RUNTIME_METHODS=ccall,cwrap,HEAP64 \
      -sALLOW_MEMORY_GROWTH=1 \
-     -sSAFE_HEAP=1 -sASSERTIONS=2 \
      -sMAXIMUM_MEMORY=2147483648 \
      -sSTACK_SIZE=8388608 \
      -Wall -Wextra -Wpedantic \
-     -sASSERTIONS=2 \
-     -sSTACK_OVERFLOW_CHECK=2 \
-     -g \
+     -O3 \
      -o ancient.js
 
 

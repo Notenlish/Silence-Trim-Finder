@@ -3,9 +3,12 @@ import { defineConfig } from "astro/config";
 
 import tailwindcss from "@tailwindcss/vite";
 
+// `astro dev` should serve from /, prod is hosted under /silence-trim-finder/
+const isDev = process.argv.includes("dev");
+
 // https://astro.build/config
 export default defineConfig({
-  base: "/silence-trim-finder",
+  base: isDev ? "/" : "/silence-trim-finder",
   vite: {
     plugins: [tailwindcss()],
   },

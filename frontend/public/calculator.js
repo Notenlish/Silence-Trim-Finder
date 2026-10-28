@@ -8,6 +8,7 @@ const MC_VERSIONS = {
   "1.21.11": 32,
   26.1: 33,
   26.2: 34,
+  26.3: 35,
 };
 
 const CHEST_STRUCT_SIZE = 8 * 3;
@@ -90,6 +91,11 @@ finderForm.addEventListener("submit", (event) => {
   rangeX = d["rangeX"];
   rangeZ = d["rangeZ"];
   version = d["version"];
+
+  if (MC_VERSIONS[version] === undefined) {
+    console.error(`Unsupported Minecraft version: ${version}`);
+    return;
+  }
 
   calculatePositions();
 
